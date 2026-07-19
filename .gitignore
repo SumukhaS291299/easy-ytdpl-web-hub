@@ -1,0 +1,5 @@
+# Ignore media files
+*.mp3
+*.m4a
+badgerDB/
+ytdpldownloader.exe
