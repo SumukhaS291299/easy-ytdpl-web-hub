@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YT-DLP Downloader</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/static/app.js" defer></script>
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text" id="loading-text">Processing...</div>
+        <div class="loading-subtext">Please wait, this might take a few moments.</div>
+    </div>
+
+    <div class="container">
+        {{if .Success}}
+        <div class="alert alert-success">
+            <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <div class="alert-content">
+                <strong>Download Completed!</strong> The media file was successfully downloaded and saved to your downloads folder.
+            </div>
+        </div>
+        {{end}}
+
+        <div class="card">
+            <h1>YT-DLP Downloader</h1>
+            <p class="subtitle">Enter a media URL to probe available streams and formats.</p>
+
+            <form action="/ytdplprobe" method="POST" class="probe-form input-row">
+                <input
+                    type="text"
+                    name="url"
+                    placeholder="Paste YouTube / Instagram / TikTok URL"
+                    required>
+
+                <button type="submit">
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    Probe Video
+                </button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>System Binaries & Versions</h2>
+
+            <div class="info-grid">
+                <div class="info-box">
+                    <span class="info-label">yt-dlp</span>
+                    <strong class="info-value">2026.06</strong>
+                </div>
+
+                <div class="info-box">
+                    <span class="info-label">FFmpeg</span>
+                    <strong class="info-value">7.2</strong>
+                </div>
+
+                <div class="info-box">
+                    <span class="info-label">FFprobe</span>
+                    <strong class="info-value">7.2</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

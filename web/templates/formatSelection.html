@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Format - YT-DLP Downloader</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/static/app.js" defer></script>
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text" id="loading-text">Processing...</div>
+        <div class="loading-subtext">Please wait, this might take a few moments.</div>
+    </div>
+
+    <div class="container">
+        <div class="card selection-card">
+            <div class="selection-header">
+                <h1>Select Download Format</h1>
+                <p class="subtitle">Select the preferred quality and format for downloading your media.</p>
+                <div class="url-badge-container">
+                    <span class="url-label">Probed URL:</span>
+                    <a href="{{.URL}}" target="_blank" class="probed-url">{{.URL}}</a>
+                </div>
+            </div>
+
+            <form action="/ytdpldownload" method="post" class="download-form">
+                <input type="hidden" name="url" value="{{.URL}}">
+                
+                <div class="table-container">
+                    <table class="format-table">
+                        <thead>
+                            <tr>
+                                <th class="col-select">Select</th>
+                                <th class="col-type">Type</th>
+                                <th class="col-res">Resolution</th>
+                                <th class="col-ext">Extension</th>
+                                <th class="col-fps">FPS</th>
+                                <th class="col-size">File Size</th>
+                                <th class="col-codecs">Codecs</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{range .Formats}}
+                            <tr class="format-row" onclick="document.getElementById('format-{{.ID}}').checked = true;">
+                                <td class="col-select">
+                                    <label class="radio-container">
+                                        <input type="radio" id="format-{{.ID}}" name="format" value="{{.ID}}" required>
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </td>
+                                <td class="col-type">
+                                    {{if eq .VideoCodec "none"}}
+                                    <span class="badge badge-audio">Audio</span>
+                                    {{else}}
+                                    <span class="badge badge-video">Video</span>
+                                    {{end}}
+                                </td>
+                                <td class="col-res">
+                                    <span class="resolution-text">{{.Resolution}}</span>
+                                </td>
+                                <td class="col-ext">
+                                    <span class="ext-tag">{{.Ext}}</span>
+                                </td>
+                                <td class="col-fps">
+                                    {{if gt .FPS 0.0}}
+                                    <span class="fps-text">{{printf "%.0f" .FPS}} FPS</span>
+                                    {{else}}
+                                    <span class="text-muted">-</span>
+                                    {{end}}
+                                </td>
+                                <td class="col-size">
+                                    <span class="size-text">{{.FormattedSize}}</span>
+                                </td>
+                                <td class="col-codecs">
+                                    <div class="codecs-container">
+                                        {{if ne .VideoCodec "none"}}
+                                        <span class="codec-tag video-codec" title="Video Codec">V: {{.VideoCodec}}</span>
+                                        {{end}}
+                                        {{if ne .AudioCodec "none"}}
+                                        <span class="codec-tag audio-codec" title="Audio Codec">A: {{.AudioCodec}}</span>
+                                        {{end}}
+                                    </div>
+                                </td>
+                            </tr>
+                            {{else}}
+                            <tr>
+                                <td colspan="7" class="no-formats">No formats found for this URL.</td>
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="form-actions">
+                    <a href="/" class="btn btn-secondary">Cancel & Back</a>
+                    <button type="submit" class="btn btn-primary">
+                        <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Start Download
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

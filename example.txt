@@ -1,0 +1,6 @@
+.\yt-dlp.exe --list-formats https://youtu.be/79dDjOaXvNc?si=bdb1aLYtpEnR1Xgd -j
+--list-thumbnails
+-F, --list-formats
+
+Only format
+.\yt-dlp.exe -s -O "%(formats)j" https://youtu.be/79dDjOaXvNc?si=bdb1aLYtpEnR1Xgd
