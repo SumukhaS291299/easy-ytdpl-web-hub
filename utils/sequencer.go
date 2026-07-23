@@ -44,6 +44,14 @@ type FormatInfo struct {
 	Size       any     `json:"size,omitempty"`
 }
 
+type PlaylistItem struct {
+	ID       string `json:"id"`
+	Title    string `json:"title"`
+	URL      string `json:"url"`
+	Duration int    `json:"duration"`
+	Uploader string `json:"uploader,omitempty"`
+}
+
 func (f FormatInfo) FormattedSize() string {
 	if f.Size == nil {
 		return "N/A"
@@ -117,6 +125,45 @@ func Probeytdpl(url string) []byte {
 		return nil
 	}
 	return returnData
+}
+
+func FlatPlaylist(url string) []PlaylistItem {
+	log.Debug("Got URL:\t", url)
+	data := GetConfig()
+	log.Debug("yt-dpl path", data.YTdplBinPath)
+	log.Debug("URL received:\t", url)
+
+	FlatJsoncommand := data.YTdplBinPath + " --flat-playlist --dump-single-json -- " + "\"" + url + "\""
+	log.Debug("Running command", FlatJsoncommand)
+	ytdplProbestdout, ytdplProbestderr := runner.Run(FlatJsoncommand)
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	outFlatJsonStruct := FlatJsonPlaylist{}
+
+	go func() {
+		defer wg.Done()
+
+		errstr := string(<-ytdplProbestderr)
+		pullOut := <-ytdplProbestdout
+		log.Warn(string(pullOut))
+		if len(strings.TrimSpace(errstr)) > 0 {
+			log.Error("[Warn]YT DPL has an error\n:", "yt_dpl error\t:", errstr)
+		}
+		if err := json.Unmarshal(pullOut, &outFlatJsonStruct); err != nil {
+			log.Error(err)
+		}
+	}()
+	wg.Wait()
+	items := make([]PlaylistItem, 0, len(outFlatJsonStruct.Entries))
+	for _, e := range outFlatJsonStruct.Entries {
+		items = append(items, PlaylistItem{
+			ID:    e.ID,
+			Title: e.Title,
+			URL:   e.URL,
+		})
+	}
+	return items
 }
 
 func Downloadytdpl(url, format string) {

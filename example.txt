@@ -11,3 +11,7 @@ Only format
 
 list
 https://www.youtube.com/watch?v=RE4uUoYgWWA&list=PLhMo8ODtLXUbNZkL4DGpD0vUwQtUx5te9
+
+
+Flat Playlists
+--flat-playlist --dump-single-json

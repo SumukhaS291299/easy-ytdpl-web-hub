@@ -23,6 +23,7 @@ func NewRouter() *http.ServeMux {
 
 	mux.HandleFunc("/", Home)
 	mux.HandleFunc("/ytdplprobe", ProbeytdplHandler)
+	mux.HandleFunc("/playlist/download", PlaylistDownloadHandler)
 	mux.HandleFunc("/ytdpldownload", DownloadytdplHandler)
 
 	return mux
