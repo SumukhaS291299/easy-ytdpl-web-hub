@@ -31,7 +31,14 @@ func ProbeytdplHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	url := r.FormValue("url")
+	getPlaylist := r.FormValue("playlist") == "true"
 
+	if !getPlaylist {
+		singleVideo(url, w, r)
+	}
+}
+
+func singleVideo(url string, w http.ResponseWriter, r *http.Request) {
 	data := utils.Probeytdpl(url)
 	if data == nil {
 		http.Error(w, "Failed to probe URL", http.StatusInternalServerError)

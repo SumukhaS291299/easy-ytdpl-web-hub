@@ -2,5 +2,12 @@
 --list-thumbnails
 -F, --list-formats
 
+-J not supported yet as too much of information is unused
+
 Only format
 .\yt-dlp.exe -s -O "%(formats)j" https://youtu.be/79dDjOaXvNc?si=bdb1aLYtpEnR1Xgd
+.\yt-dlp.exe -s -O "%(formats)j" https://youtu.be/79dDjOaXvNc?si=bdb1aLYtpEnR1Xgd
+
+
+list
+https://www.youtube.com/watch?v=RE4uUoYgWWA&list=PLhMo8ODtLXUbNZkL4DGpD0vUwQtUx5te9

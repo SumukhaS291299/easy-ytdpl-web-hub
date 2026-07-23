@@ -85,7 +85,6 @@ func Probeytdpl(url string) []byte {
 	log.Debug("Running command", command)
 	ytdplProbestdout, ytdplProbestderr := runner.Run(command)
 	var wg sync.WaitGroup
-	// var ytOut, ytErr, ffOut, ffErr, fpOut, fpErr []byte
 	wg.Add(1)
 	outJSONStruct := YtdplProbe{}
 	go func() {
