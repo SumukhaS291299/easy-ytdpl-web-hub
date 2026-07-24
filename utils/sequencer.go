@@ -124,6 +124,7 @@ func Probeytdpl(url string) []byte {
 		log.Error(err)
 		return nil
 	}
+	litedb.WriteData([]byte(url), returnData)
 	return returnData
 }
 
@@ -176,7 +177,7 @@ func Downloadytdpl(url, format string) {
 	log.Debug("Running command", command)
 	ytdplDownloaddout, ytdplDownloadstderr := runner.Run(command)
 	var wg sync.WaitGroup
-	// var ytOut, ytErr, ffOut, ffErr, fpOut, fpErr []byte
+	// TODO parallel run support
 	wg.Add(1)
 	go func() {
 		defer wg.Done()

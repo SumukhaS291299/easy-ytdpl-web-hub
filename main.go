@@ -25,7 +25,7 @@ func main() {
 	defer litedb.Dbcon.Close()
 	router := web.NewRouter()
 
-	log.Info("Starting server on", conf.ListenAddr)
+	log.Info("Starting server on", "\nAddress:\t", conf.ListenAddr)
 
 	if err := http.ListenAndServe(conf.ListenAddr, router); err != nil {
 		log.Fatal(err)
