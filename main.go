@@ -1,17 +1,20 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	litedb "ytdpldownloader/liteDB"
 	"ytdpldownloader/utils"
 	"ytdpldownloader/web"
+
+	"github.com/charmbracelet/log"
 )
+
+var conf utils.AppData
 
 func init() {
 	utils.StartLogger()
-	conf := utils.LoadConf()
+	conf = utils.LoadConf()
 	litedb.DB(conf.DBPath)
 	utils.CheckBin(conf)
 	utils.CheckUpdates()
@@ -22,9 +25,9 @@ func main() {
 	defer litedb.Dbcon.Close()
 	router := web.NewRouter()
 
-	log.Println("Starting server on http://localhost:8080")
+	log.Info("Starting server on", conf.ListenAddr)
 
-	if err := http.ListenAndServe(":8080", router); err != nil {
+	if err := http.ListenAndServe(conf.ListenAddr, router); err != nil {
 		log.Fatal(err)
 	}
 }

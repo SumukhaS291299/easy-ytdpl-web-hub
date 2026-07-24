@@ -4,3 +4,4 @@ ffprobe_bin_path: "C:\\Users\\Admin\\AppData\\Local\\Microsoft\\WinGet\\Packages
 download_dir: downloads
 max_concurrent: 5
 db_path: badgerDB
+listen_addr: 0.0.0.0:80

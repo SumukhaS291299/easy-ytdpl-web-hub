@@ -175,10 +175,11 @@ type AppData struct {
 	DownloadDir    string `yaml:"download_dir"`
 	MaxConcurrent  int    `yaml:"max_concurrent"`
 	DBPath         string `yaml:"db_path"`
+	ListenAddr     string `yaml:"listen_addr"`
 }
 
 func loadDefaultConfig() AppData {
-	return AppData{YTdplBinPath: "", FFmpegBinPath: "", DownloadDir: filepath.Join(".", "downloads"), MaxConcurrent: 5, DBPath: filepath.Join(".", "badgerDB")}
+	return AppData{YTdplBinPath: "", FFmpegBinPath: "", DownloadDir: filepath.Join(".", "downloads"), MaxConcurrent: 5, DBPath: filepath.Join(".", "badgerDB"), ListenAddr: "0.0.0.0:8080"}
 }
 
 func LoadConf() AppData {
