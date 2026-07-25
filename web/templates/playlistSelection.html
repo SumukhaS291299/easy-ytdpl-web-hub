@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Select Playlist Videos</title>
+
+        <link rel="stylesheet" href="/static/style.css" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="card">
+                <h1>Select Videos</h1>
+
+                <form action="/playlist/download" method="POST">
+                    <h2>Download Format</h2>
+
+                    <div>
+                        <label>
+                            <input
+                                type="radio"
+                                name="format"
+                                value="bv*+ba/b"
+                                checked>
+                            Best Quality
+                        </label><br>
+
+                        <label>
+                            <input
+                                type="radio"
+                                name="format"
+                                value="bv*[height<=1080]+ba/b[height<=1080] / wv*+ba/w">
+                            1080p
+                        </label><br>
+
+                        <label>
+                            <input
+                                type="radio"
+                                name="format"
+                                value="bv*[height<=720]+ba/b[height<=720] / wv*+ba/w">
+                            720p
+                        </label><br>
+
+                        <label>
+                            <input
+                                type="radio"
+                                name="format"
+                                value="bv*[height<=480]+ba/b[height<=480] / wv*+ba/w">
+                            480p
+                        </label><br>
+
+                        <label>
+                            <input
+                                type="radio"
+                                name="format"
+                                value="bv*[height<=360]+ba/b[height<=360] / wv*+ba/w">
+                            360p
+                        </label><br>
+
+                        <label>
+                            <input
+                                type="radio"
+                                name="format"
+                                value="ba/b">
+                            Audio Only
+                        </label>
+                    </div>
+
+                    <div>
+                        {{range .}}
+                        <label class="video-row">
+                            <input
+                                type="checkbox"
+                                name="videos"
+                                value="{{.URL}}"
+                                checked
+                            />
+
+                            {{.Title}}
+                        </label>
+                        <br />
+                        {{end}}
+                    </div>
+
+                    <button type="submit">Download Selected</button>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
