@@ -13,9 +13,10 @@ import (
 var conf utils.AppData
 
 func init() {
-	utils.StartLogger()
 	conf = utils.LoadConf()
+	utils.StartLogger(conf)
 	litedb.DB(conf.DBPath)
+	utils.CheckOutDir(conf)
 	utils.CheckBin(conf)
 	utils.CheckUpdates()
 	utils.SaveConfig(conf)

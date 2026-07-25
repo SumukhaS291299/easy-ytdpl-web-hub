@@ -4,7 +4,6 @@ package runner
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"os/exec"
 	"runtime"
@@ -87,7 +86,7 @@ func Run(cmd string) (stdoutBytes, stderrBytes chan []byte) {
 	if err := cmdBuilder.Start(); err != nil {
 		return
 	}
-	fmt.Printf("Ran the command %s...\n", cmd)
+	log.Debug("Ran the command %s...\n", "Full CMD:", cmdBuilder)
 
 	stdoutBytes = make(chan []byte)
 	stderrBytes = make(chan []byte)
@@ -112,7 +111,7 @@ func Run(cmd string) (stdoutBytes, stderrBytes chan []byte) {
 
 	go func() {
 		if err := cmdBuilder.Wait(); err != nil {
-			log.Error("Wait error:", err)
+			log.Error("Wait error:", "[ERROR]:\t", err)
 		}
 	}()
 

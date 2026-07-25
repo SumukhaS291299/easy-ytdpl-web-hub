@@ -1,7 +1,10 @@
+# path for executables cannot contain space
+# Instead add it as PATH env and use the executable name
 ytdlp_bin_path: ".\\bin\\yt-dlp.exe"
-ffmpeg_bin_path: "C:\\Users\\Admin\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin\\ffmpeg.exe"
-ffprobe_bin_path: "C:\\Users\\Admin\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin\\ffprobe.exe"
+ffmpeg_bin_path: 'ffmpeg'
+ffprobe_bin_path: 'ffprobe'
 download_dir: downloads
 max_concurrent: 5
 db_path: badgerDB
 listen_addr: 0.0.0.0:80
+log_level: INFO

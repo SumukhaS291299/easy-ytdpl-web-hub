@@ -167,26 +167,37 @@ func FlatPlaylist(url string) []PlaylistItem {
 	return items
 }
 
-func Downloadytdpl(url, format string) {
-	log.Debug("Got URL:\t", url)
-	log.Debug("Got Format:\t", format)
-	data := GetConfig()
-	log.Debug("yt-dpl path", data.YTdplBinPath)
-	log.Debug("URL received:\t", url)
-	command := data.YTdplBinPath + " -f	 " + format + " -- " + url
-	log.Debug("Running command", command)
+var downloadSemaphore = make(chan struct{}, 2)
+
+func downloadWorkers(command string) {
+	// 2. Acquire a slot (blocks here if 2 downloads are already running)
+	downloadSemaphore <- struct{}{}
 	ytdplDownloaddout, ytdplDownloadstderr := runner.Run(command)
-	var wg sync.WaitGroup
-	// TODO parallel run support
-	wg.Add(1)
+
 	go func() {
-		defer wg.Done()
+		// 3. Release the slot when finished so the next queued item can run
+		defer func() { <-downloadSemaphore }()
+
+		log.Info("Download starting...", "[CMD]", command)
+
 		errstr := string(<-ytdplDownloadstderr)
 		log.Debug(<-ytdplDownloaddout)
 		log.Debug(string(errstr))
+
 		if len(strings.TrimSpace(errstr)) > 0 {
 			log.Error("[Warn]YT DPL has an error\n:", "yt_dpl error\t:", errstr)
 		}
 	}()
-	wg.Wait()
+}
+
+func Downloadytdpl(url, format string) {
+	log.Debug("Got URL:\t", url)
+	log.Info("Downloading init in path", "[Path]:\t", downloadDir)
+	log.Debug("Got Format:\t", format)
+	data := GetConfig()
+	log.Debug("yt-dpl path", data.YTdplBinPath)
+	log.Debug("URL received:\t", url)
+	command := fmt.Sprintf("%s --paths %q --format %s -- %s", data.YTdplBinPath, downloadDir, format, url)
+	log.Info("Running command", "cmd", command)
+	go downloadWorkers(command)
 }

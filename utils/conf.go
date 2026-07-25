@@ -1,8 +1,11 @@
 package utils
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 
@@ -176,10 +179,11 @@ type AppData struct {
 	MaxConcurrent  int    `yaml:"max_concurrent"`
 	DBPath         string `yaml:"db_path"`
 	ListenAddr     string `yaml:"listen_addr"`
+	LogLevel       string `yaml:"log_level"`
 }
 
 func loadDefaultConfig() AppData {
-	return AppData{YTdplBinPath: "", FFmpegBinPath: "", DownloadDir: filepath.Join(".", "downloads"), MaxConcurrent: 5, DBPath: filepath.Join(".", "badgerDB"), ListenAddr: "0.0.0.0:8080"}
+	return AppData{YTdplBinPath: "", FFmpegBinPath: "", DownloadDir: filepath.Join(".", "downloads"), MaxConcurrent: 5, DBPath: filepath.Join(".", "badgerDB"), ListenAddr: "0.0.0.0:8080", LogLevel: "INFO"}
 }
 
 func LoadConf() AppData {
@@ -213,38 +217,70 @@ func LoadConf() AppData {
 	return cfg
 }
 
+var downloadDir string
+
+func CheckOutDir(conf AppData) {
+	dir := conf.DownloadDir
+	absPath, err := filepath.Abs(dir)
+	if err != nil {
+		log.Error("Error resolving output directory path", "[Error]:\t", err)
+		return
+	}
+
+	// Check if directory exists
+	if _, err := os.Stat(absPath); errors.Is(err, os.ErrNotExist) {
+		// Create directory and any missing parents (mode 0755: read/write/exec for owner, read/exec for others)
+		if err := os.MkdirAll(absPath, 0755); err != nil {
+			log.Error("Failed to create download directory", "[Path]:\t", absPath, "[Error]:\t", err)
+			return
+		}
+		log.Info("Created download directory", "[Path]:\t", absPath)
+	} else if err != nil {
+		log.Error("Error checking output directory", "[Error]:\t", err)
+		return
+	}
+
+	log.Info("Download path set to", "[Path]:\t", absPath)
+	downloadDir = absPath
+}
+
+func StripANSI(str string) string {
+	var ansiRegex = regexp.MustCompile(`\x1b\[[0-9;]*[a-zA-Z]`)
+	return ansiRegex.ReplaceAllString(str, "")
+}
+
 func CheckBin(data AppData) {
 	log.Info("Using yt-dpl path:\t" + data.YTdplBinPath)
 	log.Info("Using FFmpeg path:\t" + data.FFmpegBinPath)
 	log.Info("Using FFprobe path:\t" + data.FFprobeBinPath)
-	ytdplver, stderryt := runner.Run(data.YTdplBinPath + " --version")
-	ffmpegver, stderrffmpeg := runner.Run(data.FFmpegBinPath + " -version")
-	ffprobever, stderrffprobe := runner.Run(data.FFprobeBinPath + " -version")
+	ytdplver, stderryt := runner.Run(fmt.Sprintf("%s --version", data.YTdplBinPath))
+	ffmpegver, stderrffmpeg := runner.Run(fmt.Sprintf("%s -version", data.FFmpegBinPath))
+	ffprobever, stderrffprobe := runner.Run(fmt.Sprintf("%s -version", data.FFprobeBinPath))
 	var wg sync.WaitGroup
 	// var ytOut, ytErr, ffOut, ffErr, fpOut, fpErr []byte
 	wg.Add(3)
 	go func() {
 		defer wg.Done()
 		errstr := string(<-stderryt)
-		log.Debug("YT DPL version", string(<-ytdplver))
+		log.Debug("YT DPL version", StripANSI(string(<-ytdplver)))
 		if len(strings.TrimSpace(errstr)) > 0 {
-			log.Error("[Warn]YT DPL has an error\n:", "yt_dpl error\t:", errstr)
+			log.Error("[Warn]YT DPL has an error\n:", "yt_dpl error\t", StripANSI(string(errstr)))
 		}
 	}()
 	go func() {
 		defer wg.Done()
 		errstr := string(<-stderrffmpeg)
-		log.Debug("FFmpeg version", string(<-ffmpegver))
+		log.Debug("FFmpeg version", StripANSI(string(<-ffmpegver)))
 		if len(strings.TrimSpace(errstr)) > 0 {
-			log.Error("[Warn]FFMPEG has an error\n:", "ffmpeg error\t:", errstr)
+			log.Error("[Warn]FFMPEG has an error\n:", "ffmpeg error\t", StripANSI(string(errstr)))
 		}
 	}()
 	go func() {
 		defer wg.Done()
 		errstr := string(<-stderrffprobe)
-		log.Debug("FFprobe version", string(<-ffprobever))
+		log.Debug("FFprobe version", StripANSI(string(<-ffprobever)))
 		if len(strings.TrimSpace(errstr)) > 0 {
-			log.Error("[Warn]FFPROBE has an error\n:", "ffprobe error\t:", errstr)
+			log.Error("[Warn]FFPROBE has an error\n:", "ffprobe error\t", StripANSI(string(errstr)))
 		}
 	}()
 	wg.Wait()
